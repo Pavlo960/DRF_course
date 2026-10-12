@@ -1,6 +1,6 @@
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from pub.models import Category, MenuItem  # підкоригуй назви моделей, якщо вони у тебе відрізняються
+from django.core.management.base import BaseCommand
+from pub.models import Category, MenuItem
 
 
 class Command(BaseCommand):
@@ -26,41 +26,47 @@ class Command(BaseCommand):
 
         created_categories = {}
         for cat in categories_data:
-            obj, created = Category.objects.get_or_create(
+            obj, _ = Category.objects.get_or_create(
                 name=cat["name"],
                 defaults={"description": cat["description"]}
             )
             created_categories[cat["name"]] = obj
+
         items_data = [
             {
                 "name": "Lviv Golden Ale",
                 "category": created_categories["Draft Beer"],
-                "price": "85.00",
+                "price_per_liter": 85.00,
                 "description": "Crisp local ale with subtle caramel notes and light bitterness.",
+                "available": True,
             },
             {
                 "name": "IPA Citra Haze",
                 "category": created_categories["Draft Beer"],
-                "price": "110.00",
+                "price_per_liter": 110.00,
                 "description": "Juicy, tropical aroma with intense citrus hop flavor.",
+                "available": True,
             },
             {
                 "name": "Oatmeal Stout",
                 "category": created_categories["Draft Beer"],
-                "price": "95.00",
+                "price_per_liter": 95.00,
                 "description": "Smooth dark beer with dark chocolate and roasted coffee roast.",
+                "available": True,
             },
             {
                 "name": "Smoked Beef Jerky",
                 "category": created_categories["Pub Snacks"],
-                "price": "75.00",
+                "price_per_liter": 75.00,
                 "description": "House-cured dried beef jerky seasoned with cracked black pepper.",
+                "available": True,
             },
             {
                 "name": "Salted Pretzel with Mustard",
                 "category": created_categories["Pub Snacks"],
-                "price": "55.00",
+                "price_per_liter": 55.00,
                 "description": "Warm Bavarian pretzel served with traditional spicy pub mustard.",
+                "available": True,
             },
         ]
 
@@ -69,8 +75,9 @@ class Command(BaseCommand):
                 name=item["name"],
                 defaults={
                     "category": item["category"],
-                    "price": item["price"],
+                    "price_per_liter": item["price_per_liter"],
                     "description": item["description"],
+                    "available": item["available"],
                 }
             )
 
