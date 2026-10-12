@@ -1,0 +1,23 @@
+$kind: http-request
+order: 1000
+method: GET
+url: '{{baseUrl}}/api/orders/'
+auth:
+  type: inherit
+queryParams:
+  - key: volume
+    value: ''
+    description: Filter by volume
+    disabled: true
+  - key: customer_name
+    value: ''
+    description: Filter by customer name
+    disabled: true
+  - key: search
+    value: ''
+    description: Search in customer_name or menu_item name
+    disabled: true
+  - key: ordering
+    value: ''
+    description: 'e.g. created_at or -created_at'
+    disabled: true

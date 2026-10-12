@@ -1,0 +1,18 @@
+$kind: http-request
+order: 4000
+method: PUT
+url: '{{baseUrl}}/api/menu-items/{{menuItemId}}/'
+auth:
+  type: inherit
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Pilsner Urquell",
+      "description": "Classic Czech lager - updated",
+      "price_per_liter": 5.00,
+      "available": true
+    }

@@ -1,0 +1,11 @@
+$kind: http-request
+order: 1000
+method: GET
+url: '{{baseUrl}}/api/menu-items/'
+auth:
+  type: inherit
+queryParams:
+  - key: category
+    value: ''
+    description: Filter by category name
+    disabled: true

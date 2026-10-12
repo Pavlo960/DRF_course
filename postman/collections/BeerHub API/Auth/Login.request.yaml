@@ -1,0 +1,23 @@
+$kind: http-request
+scripts:
+  - type: afterResponse
+    code: "const data = pm.response.json();\r
+
+      pm.environment.set(\"access\", data.access);\r
+
+      pm.environment.set(\"refresh\", data.refresh);"
+    language: text/javascript
+order: 1000
+method: POST
+url: "{{baseUrl}}/api/token/"
+auth:
+  type: inherit
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"kokoa\",\r
+
+    \  \"password\": \"ajtku97976\"\r
+
+    }"

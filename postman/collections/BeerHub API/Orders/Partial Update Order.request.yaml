@@ -1,0 +1,15 @@
+$kind: http-request
+order: 6000
+method: PATCH
+url: '{{baseUrl}}/api/orders/{{orderId}}/'
+auth:
+  type: inherit
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "volume": 1.5
+    }

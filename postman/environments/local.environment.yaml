@@ -1,0 +1,8 @@
+name: local
+values:
+  - key: base_url
+    value: ''
+  - key: access
+    value: ''
+  - key: refresh
+    value: ''

@@ -1,0 +1,18 @@
+$kind: http-request
+order: 2000
+method: POST
+url: "{{baseUrl}}/api/menu-items/"
+auth:
+  type: noauth
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{access}}
+body:
+  type: json
+  content: |-
+    {
+      "name": "Pilsner Urquell",
+      "description": "Classic Czech lager",
+      "price_per_liter": 4.50,
+      "available": true
+    }

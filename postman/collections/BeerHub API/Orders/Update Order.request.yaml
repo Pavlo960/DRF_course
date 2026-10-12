@@ -1,0 +1,17 @@
+$kind: http-request
+order: 5000
+method: PUT
+url: '{{baseUrl}}/api/orders/{{orderId}}/'
+auth:
+  type: inherit
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "menu_item": 1,
+      "customer_name": "John Doe",
+      "volume": 1.0
+    }

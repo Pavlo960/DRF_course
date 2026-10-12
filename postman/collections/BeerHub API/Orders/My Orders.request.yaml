@@ -1,0 +1,7 @@
+$kind: http-request
+order: 2000
+method: GET
+url: '{{baseUrl}}/api/orders/my/'
+auth:
+  type: inherit
+description: Returns only orders belonging to the authenticated user

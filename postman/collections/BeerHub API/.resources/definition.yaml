@@ -1,0 +1,24 @@
+$kind: collection
+description: API collection for the BeerHub Django REST Framework application. Covers menu items and orders management.
+variables:
+  - key: baseUrl
+    value: http://localhost:8000
+    disabled: false
+  - key: token
+    value: ""
+    disabled: false
+  - key: menuItemId
+    value: "1"
+    disabled: false
+  - key: orderId
+    value: "1"
+    disabled: false
+  - key: json_web_token_069t
+    secret: true
+    disabled: false
+auth:
+  - id: 5466ece2-00e1-4c36-8bb7-80556e33f84d
+    type: bearer
+    name: Bearer Token
+    credentials:
+      token: "{{access}}"
