@@ -5,9 +5,37 @@ build/
 dist/
 wheels/
 *.egg-info
-.env
 
 # Virtual environments
-.venv
+.venv/
+venv/
+env/
+
+# Secrets / local config (keep the template)
+.env
+.env.*
+!.env.example
+
+# Local database & uploaded/collected files
 db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+media/
+staticfiles/
+
+# Tests & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Postman local cache (collections in postman/ are tracked)
 .postman/

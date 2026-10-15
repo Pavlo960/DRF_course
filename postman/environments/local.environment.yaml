@@ -1,5 +1,9 @@
 name: local
 values:
+  - key: username
+    value: barman
+  - key: password
+    value: beer12345
   - key: base_url
     value: ''
   - key: access

@@ -16,8 +16,8 @@ body:
   type: json
   content: "{\r
 
-    \  \"username\": \"kokoa\",\r
+    \  \"username\": \"{{username}}\",\r
 
-    \  \"password\": \"ajtku97976\"\r
+    \  \"password\": \"{{password}}\"\r
 
     }"
