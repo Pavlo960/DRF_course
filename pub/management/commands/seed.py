@@ -14,23 +14,22 @@ class Command(BaseCommand):
             username="barman",
             defaults={"email": "barman@beerhub.local"}
         )
-        if not user.has_usable_password():
-            user.set_password("beer12345")
-            user.save()
+        user.is_staff = True
+        user.is_superuser = True
+        # Demo credentials for local development only
+        user.set_password("beer12345")
+        user.save()
+        self.stdout.write(self.style.WARNING("Demo superuser: barman / beer12345 (dev only)"))
 
-        categories_data = [
-            {"name": "Draft Beer", "description": "Fresh cold draft craft beer on tap"},
-            {"name": "Bottled & Canned", "description": "Craft bottles and imported cans"},
-            {"name": "Pub Snacks", "description": "Nuts, jerky, and tasty appetizers"},
+        category_names = [
+            "Draft Beer",
+            "Bottled & Canned",
         ]
 
         created_categories = {}
-        for cat in categories_data:
-            obj, _ = Category.objects.get_or_create(
-                name=cat["name"],
-                defaults={"description": cat["description"]}
-            )
-            created_categories[cat["name"]] = obj
+        for cat_name in category_names:
+            obj, _ = Category.objects.get_or_create(name=cat_name)
+            created_categories[cat_name] = obj
 
         items_data = [
             {
@@ -55,17 +54,10 @@ class Command(BaseCommand):
                 "available": True,
             },
             {
-                "name": "Smoked Beef Jerky",
-                "category": created_categories["Pub Snacks"],
-                "price_per_liter": 75.00,
-                "description": "House-cured dried beef jerky seasoned with cracked black pepper.",
-                "available": True,
-            },
-            {
-                "name": "Salted Pretzel with Mustard",
-                "category": created_categories["Pub Snacks"],
-                "price_per_liter": 55.00,
-                "description": "Warm Bavarian pretzel served with traditional spicy pub mustard.",
+                "name": "Baltic Porter",
+                "category": created_categories["Bottled & Canned"],
+                "price_per_liter": 120.00,
+                "description": "Strong dark lager with notes of plum, licorice and toasted malt.",
                 "available": True,
             },
         ]

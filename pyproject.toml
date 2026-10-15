@@ -1,7 +1,13 @@
 [project]
 name = "beerhub"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pub menu and draft beer ordering REST API built with Django REST Framework"
 readme = "README.md"
-requires-python = ">=3.15"
-dependencies = []
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1,<6.2",
+    "djangorestframework>=3.15.0",
+    "djangorestframework-simplejwt>=5.3.0",
+    "django-filter>=24.0",
+    "django-environ>=0.11.0",
+]

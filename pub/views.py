@@ -1,11 +1,10 @@
-from django.shortcuts import render
-from rest_framework import generics, permissions, viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
+from .filters import MenuItemFilter, OrderFilter
 from .models import Category, MenuItem, Order
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsEditableByCustomer, IsOwnerOrStaff
 from .serializers import (
     CategorySerializer,
     MenuItemSerializer,
@@ -16,47 +15,46 @@ from .serializers import (
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
 
 class MenuItemViewSet(viewsets.ModelViewSet):
-    queryset = MenuItem.objects.all()
+    queryset = MenuItem.objects.select_related('category')
     serializer_class = MenuItemSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
 
-    def get_queryset(self):
-        queryset = MenuItem.objects.all()
-        category = self.request.query_params.get("category")
-        if category:
-            if category.isdigit():
-                queryset = queryset.filter(category_id=category)
-            else:
-                queryset = queryset.filter(category__name__icontains=category)
-        return queryset
+    filterset_class = MenuItemFilter
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'price_per_liter']
+    ordering = ['id']
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly,
-    ]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrStaff, IsEditableByCustomer]
 
-    filterset_fields = ["volume", "customer_name"]
-    search_fields = ["customer_name", "menu_item__name"]
-    ordering_fields = ["created_at", "volume"]
-    ordering = ["-created_at"]
+    filterset_class = OrderFilter
+    search_fields = ['customer_name', 'menu_item__name']
+    ordering_fields = ['created_at', 'volume']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        queryset = Order.objects.select_related('menu_item', 'owner')
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        user = self.request.user
+        customer_name = (
+            serializer.validated_data.get('customer_name')
+            or user.get_full_name()
+            or user.username
+        )
+        serializer.save(owner=user, customer_name=customer_name)
 
-    @action(
-        detail=False,
-        methods=["get"],
-        permission_classes=[permissions.IsAuthenticated],
-    )
+    @action(detail=False, methods=['get'])
     def my(self, request):
-        my_orders = self.get_queryset().filter(owner=request.user)
+        my_orders = self.filter_queryset(self.get_queryset().filter(owner=request.user))
         serializer = self.get_serializer(my_orders, many=True)
         return Response(serializer.data)
