@@ -16,10 +16,11 @@ env/
 .env.*
 !.env.example
 
-# Local database & uploaded/collected files
+# Local database, data dumps & uploaded/collected files
 db.sqlite3
 db.sqlite3-journal
 *.sqlite3
+data.json
 media/
 staticfiles/
 
