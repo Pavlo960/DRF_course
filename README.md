@@ -5,32 +5,74 @@ Backend engine powering pub menu management and draft beer ordering. Built with 
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
 ![Django](https://img.shields.io/badge/Django-6.x-092E20?logo=django)
 ![DRF](https://img.shields.io/badge/DRF-SimpleJWT-red)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-WSL2-2496ED?logo=docker)
 
 ---
 
 ## ⚡ Quick Start
 
-### Option A: Docker Deployment (Recommended)
+### Option A: Docker + PostgreSQL (Recommended)
 
-Make sure Docker Desktop is up and running.
+Make sure Docker Desktop is up and running. Run all commands from the `beerhub/` folder (where `docker-compose.yml` is).
+
+`docker compose` starts two services:
+
+| Service | What it is | Details |
+| :--- | :--- | :--- |
+| `db` | PostgreSQL 17 | database `app_db`, user `app_user`, password `app_pass`; data persists in the `postgres_data` volume; `pg_isready` healthcheck |
+| `web` | Django API on port `8000` | connects via `DATABASE_URL=postgres://app_user:app_pass@db:5432/app_db`; starts only after `db` is healthy and runs `migrate` on every start |
 
 ```bash
 # 1. Prepare environment variables
 cp .env.example .env    # On Windows: copy .env.example .env
 
-# 2. Build and run containers
-docker compose up --build
+# 2. Build and run containers (-d = in the background)
+docker compose up --build -d
 
-# 3. (Optional) Load sample beers & categories
+# 3. Fill the database — sample data and/or your own admin
 docker compose exec web python manage.py seed
+docker compose exec web python manage.py createsuperuser
 ```
 
 > API base address: **`http://localhost:8000/api/`**
 
+Useful commands:
+
+```bash
+docker compose logs -f web      # follow Django logs
+docker compose down             # stop containers (data is kept)
+docker compose down -v          # stop and DELETE the database volume
+```
+
+#### Moving existing data from SQLite to PostgreSQL
+
+```bash
+# locally (venv, no DATABASE_URL -> uses db.sqlite3)
+python manage.py migrate
+python manage.py dumpdata --exclude contenttypes --exclude auth.permission --exclude sessions --exclude admin.logentry -o data.json
+
+# into PostgreSQL in Docker (the project folder is mounted into the container)
+docker compose up -d
+docker compose exec web python manage.py loaddata data.json
+```
+
+> `data.json` contains users with password hashes — it is git-ignored, don't commit it.
+
+#### Looking into the database (psql)
+
+```bash
+docker compose exec db psql -U app_user -d app_db -c "\dt"
+docker compose exec db psql -U app_user -d app_db -c "SELECT * FROM pub_order;"
+```
+
+Or open an interactive session with `docker compose exec db psql -U app_user -d app_db` and type commands one by one (`\dt`, `SELECT ...;`, `\q` to exit). Tables are named `pub_category`, `pub_menuitem`, `pub_order`, `auth_user`.
+
 ---
 
 ### Option B: Local Environment
+
+Without `DATABASE_URL` in `.env` the app uses a local SQLite file (`db.sqlite3`). To use PostgreSQL locally, set e.g. `DATABASE_URL=postgres://app_user:app_pass@localhost:5432/app_db` (for the Docker `db` service this also needs `ports: ["5432:5432"]` added to it in `docker-compose.yml`).
 
 ```bash
 # Clone & navigate
